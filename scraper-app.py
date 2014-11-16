@@ -207,7 +207,8 @@ class LandRegisterScraper():
                     j+=1
             except Exception as e:
                 self.db.log_error(datetime.now(), str(e)+"##### STREET PROCESSED: {0} ##### BOROUGH: {1}".format(street["name"], street["borough"]))
-                    
+        complete_streets.close()
+        
     def _get_profiles(self):
         print("Parsing and inserting profiles into mongo \nThis will take a while")
         i = 0
@@ -238,6 +239,8 @@ class LandRegisterScraper():
             except Exception as e:
                 self.db.log_error(datetime.now(), str(e)+u"##### STREET PROCESSED: {0}".format(street["name"]))
                 self.db.log_last_insert(street["name"], 1)
+        complete_streets.close()
+                
             
         
     def _parse_profile(self, profile_id):
