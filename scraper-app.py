@@ -179,7 +179,7 @@ class LandRegisterScraper():
                 pass
             
     def _get_profiles_ids(self):
-        complete_streets = self.db.complete_streets_collection.find({"profiles_ids_processed":0}) 
+        complete_streets = self.db.complete_streets_collection.find({"profiles_ids_processed":0}, timeout=False) 
         nbr_streets = complete_streets.count()
         ten_percent_street_ids = nbr_streets /10
         i = 0
@@ -213,7 +213,7 @@ class LandRegisterScraper():
         i = 0
         j = 1
         complete_streets = self.db.complete_streets_collection.find({"profiles_ids_processed":1,
-                                                                     "profiles_processed":0})
+                                                                     "profiles_processed":0}, timeout=False)
         nbr_streets = self.db.complete_streets_collection.find({"profiles_ids_processed":1,
                                                                      "profiles_processed":0}).count()
         ten_percent_street_ids = nbr_streets/10
