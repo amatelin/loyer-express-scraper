@@ -5,6 +5,7 @@ from selenium import webdriver
 from numpy import unique
 from time import sleep
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 from datetime import datetime
 
 class MontrealToponymyScraper():
@@ -299,7 +300,6 @@ class LandRegisterScraper():
         profile[u"répartition_fiscale"]["catégorie"] = self._driver.find_element_by_xpath('//*[@id="AutoNumber1"]/tbody/tr[{0}]/td[1]'.format((start_3+22))).text
         profile[u"répartition_fiscale"]["valeur_imposable"] = self._driver.find_element_by_xpath('//*[@id="AutoNumber1"]/tbody/tr[{0}]/td[2]'.format((start_3+23))).text
         profile[u"répartition_fiscale"]["valeur_non_imposable"] = self._driver.find_element_by_xpath('//*[@id="AutoNumber1"]/tbody/tr[{0}]/td[5]'.format((start_3+23))).text
-        
         return profile
 
     def _get_search_url_by_id(self, street_id):
@@ -326,7 +326,7 @@ class MongoDb(MongoClient):
         self.complete_streets_collection.insert(street_dictionary)
         
     def insert_profiles_ids(self, street_id, profiles_ids_list):
-        self.complete_streets_collection.update({"_id":street_id},
+        self.complete_streets_collection.update({"_id":ObjectId(street_id)},
                                                 {"$set":{"profiles_ids":profiles_ids_list,
                                                          "profiles_ids_processed":1}})
                                                          
@@ -334,12 +334,12 @@ class MongoDb(MongoClient):
         self.profiles_collection.insert(profiles_dicts_list)
         
     def update_complete_street_status(self, street_id, status):
-        self.complete_streets_collection.update({"_id":street_id},
+        self.complete_streets_collection.update({"_id":ObjectId(street_id)},
                                                 {"$set":{"profiles_processed":status}})
         
         
     def update_unique_street_status(self, _id, status):
-        self.unique_streets_collection.update({"_id":_id},
+        self.unique_streets_collection.update({"_id":ObjectId(_id)},
                                               {"$set":{"processed":status}})
     def log_error(self, time, error):
         error = {"date":time, 
@@ -350,7 +350,7 @@ class MongoDb(MongoClient):
         logged = self.last_insert_log.count()
         if logged:
             log = self.last_insert_log.find_one()
-            self.last_insert_log.update({"_id": log["_id"]}, {"currentDate": datetime.now(), "street":street, "error":error})         
+            self.last_insert_log.update({"_id": ObjectId(log["_id"])}, {"currentDate": datetime.now(), "street":street, "error":error})         
         else:
             self.last_insert_log.insert({"currentDate":datetime.now(), "street":street, "error":error})
                             
